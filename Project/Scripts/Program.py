@@ -48,9 +48,11 @@ def Train(data, test_data):
         x = csr_matrix(x)
         # Split the data into training and test sets
         data_frame_test = pd.DataFrame(test_data, columns=['tweet', 'label'])
-        x_test = vectorizer.fit_transform(data_frame_test['tweet'])
+        test = [test_data[0][0]]
+        l = [test_data[0][1]]
+        x_test = vectorizer.fit_transform(test)
         le = preprocessing.LabelEncoder()
-        y_test = le.fit_transform(data_frame_test['label'])
+        y_test = le.fit_transform(l)
         x_shape, _ = x_test.shape
         _, y_shape = x.shape
         newArray = np.zeros((x_shape, y_shape))
@@ -99,6 +101,8 @@ def evaluate_model(y_test, y_pred, model_name):
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred))
     print('-' * 50)
+
+
 
 if __name__ == "__main__":
     main()
