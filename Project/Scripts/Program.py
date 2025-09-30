@@ -19,36 +19,49 @@ from sklearn.tree import DecisionTreeClassifier
 path = os.getcwd().replace("Scripts", "")
 
 def main():
+    print("Cleaning data...")
+    #Find all files in the input and clean the data
     files = os.listdir(f'{path}Data/Input')
     for file in files:
         clean_data_file(f'{path}Data/Input/{file}')
-
-    data = list()
+    #Initliaze the datasets
+    training_data = list()
     test_data = list()
 
+    #File all cleaned files in the output folders
     training_files = os.listdir(f'{path}Data/Output/Train')
     testing_files = os.listdir(f'{path}Data/Output/Test')
 
+    #Read each cleaned file
     for file in training_files:
-        data += read_data(f'{path}Data/Output/Train/{file}')
-
+        training_data += read_data(f'{path}Data/Output/Train/{file}')
     for file in testing_files:
         test_data += read_data(f'{path}Data/Output/Test/{file}')
 
-    model_1, model_2, model_3, model_4, model_5, model_6 = train(data)
+    #Train each model
+    model_1, model_2, model_3, model_4, model_5, model_6 = train(training_data)
 
+    #Initliaze the results
     results = []
     model_names = ["Decision Tree", "Random Forest", "Logistic Regression", "KNN", "Gradient Boosting",
                    "Linear Regression"]
     models = [model_1, model_2, model_3, model_4, model_5, model_6]
 
+    #Test each model and return the evaluation of the model
     for model, name in zip(models, model_names):
         y_true, y_prediction = use(model, name, test_data)
         results.append((name, y_true, y_prediction))
+
+    #Create a plot of the results
     create_metrics_comparison_plot(results)
     create_confusion_matrix_comparison(results)
 
 def clean_data(text:str):
+    # 1. Convert all text to lower.
+    # 2. Keep these characters only (a-zA-Z0-9-_=+!@#$%^&*();./, ).
+    # 3. Remove all links.
+    # 4. Remove all white space.
+    # 5. Return the cleaned data
     text = text.lower()
     text = re.sub(r'[^a-zA-Z0-9-_=+!@#$%^&*();./, ]', '', text)
     url_pattern = re.compile(r'https?://\S+|www\.\S+|http?://\S+|http?//\S+|https?//\S+')
@@ -58,60 +71,77 @@ def clean_data(text:str):
 
 def clean_data_file(file):
     try:
-        cleaned_data = []
+        #Create clean data list
+        cleaned_data = list()
         if ".xlsx" in file:
+            #Read Excel file
             data = pd.read_excel(file)
             for index, row in data.iterrows():
+                #Clean the text field
                 text = clean_data(str(row['tweet']))
+                #Assign label
                 label = row['label']
+                #If no text is present don't add to list
                 if text != '' or label is not None:
                     cleaned_data.append((text, label))
         elif ".csv" in file:
+            #Read csv file
             data = pd.read_csv(file)
             for index, row in data.iterrows():
+                #Clean the text field
                 text = clean_data(str(row[0]))
+                #Assign label
                 label = row[1]
+                #If no text is present don't add to list
                 if text != '' or label is not None:
                     cleaned_data.append((text, label))
         else:
+            #Raise error if not valid file type
             raise "Invalid file type. Please use .xlsx, or .csv"
+        #Create the output path
         output = file.replace('.xlsx', '.csv').replace('Input', 'Output')
 
+        #Place in folder for what use it will have. This is dependent on the file name and if it contains (test, train, val or validate)
         if 'test' in output.lower():
             output = f"{output.split('/')[0]}/Output/Test/{output.split('/')[-1]}"
         elif 'val' in output.lower() or 'validate' in output.lower():
             output = f"{output.split('/')[0]}/Output/Validate/{output.split('/')[-1]}"
         else:
             output = f"{output.split('/')[0]}/Output/Train/{output.split('/')[-1]}"
-
+        #Save to new csv file
         with open(output, 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerows(cleaned_data)
     except Exception as e:
+        #Print error and return nothing if error occurs
         print(f"Error: Cleaning data - {e}")
         return None
 
 def read_data(file):
+    #Open the cleaned file
     with open(file, 'r') as f:
+        #Read each line and return as list
         reader = csv.reader(f)
         data = list(reader)
     return data
-
 
 def train(data):
     try:
         print("Training models")
         start_time = time.time()
-        data_frame = pd.DataFrame(data, columns=['tweet', 'label'])
+        #convert data to data frame
+        data_frame = pd.DataFrame(data, columns=['text', 'label'])
+        #Tokenize the text so it can be used to train the model
         vectorizer = TfidfVectorizer()
-        x = vectorizer.fit_transform(data_frame['tweet'])
+        x = vectorizer.fit_transform(data_frame['text'])
+        #Create a label encoder
         le = preprocessing.LabelEncoder()
         y = le.fit_transform(data_frame['label'])
-        # Standardize the features (keep sparse)
+        # Create a scale so the model can expect multiple different input sizes
         scaler = StandardScaler(with_mean=False)
         X_train_scaled = scaler.fit_transform(x)
 
-        # Initialize models
+        # Initialize models different models
         decision_tree = DecisionTreeClassifier(random_state=42)
         random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
         logistic_regression = LogisticRegression(random_state=42, max_iter=1000)
@@ -145,10 +175,10 @@ def train(data):
 
 def use(model_pack, model_name, input_data):
     model, vectorizer, scaler, label_encoder = model_pack
-    data_frame = pd.DataFrame(input_data, columns=['tweet', 'label'])
+    data_frame = pd.DataFrame(input_data, columns=['text', 'label'])
 
-    # Use the training vectorizer and scaler – do NOT refit on test data
-    x_test = vectorizer.transform(data_frame['tweet'])
+    # Use the training vectorizer and scaler
+    x_test = vectorizer.transform(data_frame['text'])
     x_test_scaled = scaler.transform(x_test)
 
     # Use the training label encoder to convert test labels
