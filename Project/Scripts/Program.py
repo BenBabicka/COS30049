@@ -201,16 +201,16 @@ def use(model_pack, model_name, input_data):
     y_prediction = model.predict(x_test_scaled)
     # Evaluate
     print(f"{model_name} Evaluation:")
-    predict(model_pack, model_name, input_data)
+    random_selection_prediction(model_pack, model_name, input_data)
     if model_name == "Linear Regression" or model_name == "Ridge" or model_name == "Lasso" or model_name == "Elastic Net":
         create_regression_plot(model_pack, model_name, input_data)
     evaluate_model(y_true, y_prediction, model_name)
-    print('-' * 50)
+    print('_' * 100)
     if model_name == "Linear Regression" or model_name == "Ridge" or model_name == "Lasso" or model_name == "Elastic Net":
         return None, None
     return y_true, y_prediction
 
-def predict(model_pack, model_name, input_data):
+def random_selection_prediction(model_pack, model_name, input_data):
     model, vectorizer, scaler, label_encoder = model_pack
     test_group = list()
     for i in range(10):
@@ -227,13 +227,16 @@ def predict(model_pack, model_name, input_data):
 
     # Predict with the model
     y_prediction = model.predict(x_test_scaled)
+    print('\n')
     for i in range(len(test_group)):
-        print(f"Text: {test_group[i][0]}")
-        print(f"Actual Labels: {test_group[i][1]}, {y_true[i]}")
-        print(f"Prediction: {y_prediction[i]}")
+        print(f"    Text: {test_group[i][0]}")
+        print(f"    Actual Labels: {test_group[i][1]}, {y_true[i]}")
+        print(f"    Prediction: {y_prediction[i]}")
+        print('\n')
 
 
 def evaluate_model(actual_labels, predicted_labels, model_name):
+    print('\n')
     print(f"MSE: {mean_squared_error(actual_labels, predicted_labels)}")
     print(f"R2 score: {r2_score(actual_labels, predicted_labels)}")
 
@@ -285,6 +288,7 @@ def create_metrics_comparison_plot(results):
     ax2.set_ylabel('Accuracy Score')
     ax2.set_title('Model Accuracy Comparison')
     ax2.grid(True, alpha=0.3)
+    ax2.set_xticks(range(len(model_names)))
     ax2.set_xticklabels(model_names, rotation=45, ha='right')
     ax2.set_ylim(0, 1.1)
 
@@ -447,7 +451,6 @@ def create_regression_plot(model_pack, model_name, input_data):
     print(f"Mean Absolute Error: {np.mean(np.abs(residuals)):.4f}")
     print(f"Residuals Mean: {np.mean(residuals):.4f}")
     print(f"Residuals Std: {np.std(residuals):.4f}")
-    print('-' * 25)
 
 
 if __name__ == "__main__":
