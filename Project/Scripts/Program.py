@@ -19,11 +19,21 @@ from sklearn.tree import DecisionTreeClassifier
 path = os.getcwd().replace("Scripts", "")
 
 def main():
-    clean_data(f'{path}Data/Input/Constraint_English_Train.xlsx')
-    clean_data(f'{path}Data/Input/Constraint_English_Test.xlsx')
+    files = os.listdir(f'{path}Data/Input')
+    for file in files:
+        clean_data_file(f'{path}Data/Input/{file}')
 
-    data = read_data(f'{path}Data/Output/Constraint_English_Train.csv')
-    test_data = read_data(f'{path}Data/Output/Constraint_English_Test.csv')
+    data = list()
+    test_data = list()
+
+    training_files = os.listdir(f'{path}Data/Output/Train')
+    testing_files = os.listdir(f'{path}Data/Output/Test')
+
+    for file in training_files:
+        data += read_data(f'{path}Data/Output/Train/{file}')
+
+    for file in testing_files:
+        test_data += read_data(f'{path}Data/Output/Test/{file}')
 
     model_1, model_2, model_3, model_4, model_5, model_6 = train(data)
 
@@ -38,28 +48,55 @@ def main():
     create_metrics_comparison_plot(results)
     create_confusion_matrix_comparison(results)
 
+def clean_data(text:str):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z0-9-_=+!@#$%^&*();./, ]', '', text)
+    url_pattern = re.compile(r'https?://\S+|www\.\S+|http?://\S+|http?//\S+|https?//\S+')
+    text = url_pattern.sub('', text)
+    text = text.strip()
+    return text
+
+def clean_data_file(file):
+    try:
+        cleaned_data = []
+        if ".xlsx" in file:
+            data = pd.read_excel(file)
+            for index, row in data.iterrows():
+                text = clean_data(str(row['tweet']))
+                label = row['label']
+                if text != '' or label is not None:
+                    cleaned_data.append((text, label))
+        elif ".csv" in file:
+            data = pd.read_csv(file)
+            for index, row in data.iterrows():
+                text = clean_data(str(row[0]))
+                label = row[1]
+                if text != '' or label is not None:
+                    cleaned_data.append((text, label))
+        else:
+            raise "Invalid file type. Please use .xlsx, or .csv"
+        output = file.replace('.xlsx', '.csv').replace('Input', 'Output')
+
+        if 'test' in output.lower():
+            output = f"{output.split('/')[0]}/Output/Test/{output.split('/')[-1]}"
+        elif 'val' in output.lower() or 'validate' in output.lower():
+            output = f"{output.split('/')[0]}/Output/Validate/{output.split('/')[-1]}"
+        else:
+            output = f"{output.split('/')[0]}/Output/Train/{output.split('/')[-1]}"
+
+        with open(output, 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerows(cleaned_data)
+    except Exception as e:
+        print(f"Error: Cleaning data - {e}")
+        return None
+
 def read_data(file):
     with open(file, 'r') as f:
         reader = csv.reader(f)
         data = list(reader)
     return data
 
-def clean_data(file):
-    cleaned_data = []
-    data = pd.read_excel(file)
-
-    for index, row in data.iterrows():
-        tweet = str(row['tweet'])
-        tweet = re.sub(r'[^a-zA-Z0-9-_=+!@#$%^&*();./, ]', '', tweet)
-        url_pattern = re.compile(r'https?://\S+|www\.\S+|http?://\S+|http?//\S+|https?//\S+')
-        tweet = url_pattern.sub('', tweet)
-        label = row['label']
-        cleaned_data.append((tweet.strip(), label))
-
-    output = file.replace('.xlsx', '.csv').replace('Input', 'Output')
-    with open(output, 'w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerows(cleaned_data)
 
 def train(data):
     try:
@@ -139,7 +176,6 @@ def evaluate_model(actual_labels, predicted_labels, model_name):
 
 
 def create_metrics_comparison_plot(results):
-    """Create a comprehensive metrics comparison plot"""
     model_names = [result[0] for result in results]
     metrics = {'Accuracy': [], 'Precision': [], 'Recall': [], 'F1-Score': []}
 
