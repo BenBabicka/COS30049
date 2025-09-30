@@ -1,3 +1,4 @@
+import csv
 import os
 import re
 import time
@@ -18,8 +19,11 @@ from sklearn.tree import DecisionTreeClassifier
 path = os.getcwd().replace("Scripts", "")
 
 def main():
-    data = clean_data(f'{path}Data/Input/Constraint_English_Train.xlsx')
-    test_data = clean_data(f'{path}Data/Input/Constraint_English_Test.xlsx')
+    clean_data(f'{path}Data/Input/Constraint_English_Train.xlsx')
+    clean_data(f'{path}Data/Input/Constraint_English_Test.xlsx')
+
+    data = read_data(f'{path}Data/Output/Constraint_English_Train.csv')
+    test_data = read_data(f'{path}Data/Output/Constraint_English_Test.csv')
 
     model_1, model_2, model_3, model_4, model_5, model_6 = train(data)
 
@@ -29,11 +33,16 @@ def main():
     models = [model_1, model_2, model_3, model_4, model_5, model_6]
 
     for model, name in zip(models, model_names):
-        y_true, y_pred = use(model, name, test_data)
-        results.append((name, y_true, y_pred))
+        y_true, y_prediction = use(model, name, test_data)
+        results.append((name, y_true, y_prediction))
     create_metrics_comparison_plot(results)
     create_confusion_matrix_comparison(results)
 
+def read_data(file):
+    with open(file, 'r') as f:
+        reader = csv.reader(f)
+        data = list(reader)
+    return data
 
 def clean_data(file):
     cleaned_data = []
@@ -45,8 +54,12 @@ def clean_data(file):
         url_pattern = re.compile(r'https?://\S+|www\.\S+|http?://\S+|http?//\S+|https?//\S+')
         tweet = url_pattern.sub('', tweet)
         label = row['label']
-        cleaned_data.append((tweet, label))
-    return cleaned_data
+        cleaned_data.append((tweet.strip(), label))
+
+    output = file.replace('.xlsx', '.csv').replace('Input', 'Output')
+    with open(output, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerows(cleaned_data)
 
 def train(data):
     try:
@@ -208,7 +221,6 @@ def create_metrics_comparison_plot(results):
 
 
 def create_confusion_matrix_comparison(results):
-    """Create confusion matrices for all models"""
     fig, axes = plt.subplots(2, 3, figsize=(18, 12))
     axes = axes.flatten()
 
