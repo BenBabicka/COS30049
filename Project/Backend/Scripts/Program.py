@@ -58,7 +58,6 @@ def main():
     create_metrics_comparison_plot(results)
     create_confusion_matrix_comparison(results)
 
-
 def clean_data(text:str):
     # 1. Convert all text to lower.
     # 2. Keep these characters only (a-zA-Z0-9-_=+!@#$%^&*();./, ).
@@ -70,7 +69,22 @@ def clean_data(text:str):
     url_pattern = re.compile(r'https?://\S+|www\.\S+|http?://\S+|http?//\S+|https?//\S+')
     text = url_pattern.sub('', text)
     text = text.strip()
-    return text
+    keywords = ['covid', 'pfizer', 'astrazeneca', 'vaccine', 'inoculation', 'immunization', 'vaccination', 'jab', 'quarantine', 'injection', 'booster', 'symptoms', 'health', 'condition']
+    for keyword in keywords:
+        if keyword in text:
+            return text
+    return None
+
+def find_label(label):
+    if type(label) == str and (label.lower() == "true"):
+        label = 'real'
+    elif type(label) == str and (label.lower() == "false"):
+        label = 'fake'
+    if type(label) == bool and label == True:
+        label = 'real'
+    elif type(label) == bool and label == False:
+        label = 'fake'
+    return label
 
 def clean_data_file(file):
     try:
@@ -82,8 +96,11 @@ def clean_data_file(file):
             for index, row in data.iterrows():
                 #Clean the text field
                 text = clean_data(str(row['tweet']))
+                if text is None:
+                    continue
                 #Assign label
-                label = row['label']
+                label = find_label(row['label'])
+
                 #If no text is present don't add to list
                 if text != '' or label is not None:
                     cleaned_data.append((text, label))
@@ -93,8 +110,11 @@ def clean_data_file(file):
             for index, row in data.iterrows():
                 #Clean the text field
                 text = clean_data(str(row[0]))
+                if text is None:
+                    continue
                 #Assign label
-                label = row[1]
+                label = find_label(row[1])
+
                 #If no text is present don't add to list
                 if text != '' or label is not None:
                     cleaned_data.append((text, label))
