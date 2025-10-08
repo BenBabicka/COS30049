@@ -1,4 +1,4 @@
-# To run data splitting scrtip
+# To run data splitting script
 ```
 1. Manually enter the following in the respective fields of the dataset_split.ipynb file in the Project/Backend/Scripts directory.
 2. Add the data set that need to be to the directory.
