@@ -1,4 +1,12 @@
-# To run the program
+# To run data splitting scrtip
+```
+1. Manually enter the following in the respective fields of the dataset_split.ipynb file in the Project/Backend/Scripts directory.
+2. Add the data set that need to be to the directory.
+3. Run the script.
+4 .Move the three new csv files to the Project/Data/Input directory.
+```
+
+# To run the main program
 ### CLI
 ```
 1. Go to the scripts folder
