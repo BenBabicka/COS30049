@@ -1,0 +1,225 @@
+/* src/styles.css */
+
+/* Define color variables for the default (Light) theme.
+  We also add a transition for a smooth theme change.
+*/
+:root {
+  --background-color: #f3f4f6;
+  --card-background: white;
+  --text-color: #111;
+  --muted-text-color: #6b7280;
+  --border-color: #e6eef8;
+  --tab-background: #f1f5f9;
+  --tab-active-background: #1e90ff;
+  --tab-active-text: white;
+  --item-background: #f8fafc;
+  --result-card-background: #fff7ed;
+  --result-card-border: #fde68a;
+  --reset-btn-background: #ef4444;
+  --add-btn-background: #10b981;
+  --analyse-btn-background: #fbbf24;
+
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Define the same variables with different color values for the Dark theme.
+  This theme is applied when the body has a 'dark' class.
+*/
+.dark {
+  --background-color: #121212;
+  --card-background: #1e1e1e;
+  --text-color: #e1e1e1;
+  --muted-text-color: #888;
+  --border-color: #333;
+  --tab-background: #2c2c2c;
+  --tab-active-background: #1e90ff;
+  --tab-active-text: white;
+  --item-background: #252525;
+  --result-card-background: #2a2114;
+  --result-card-border: #5a4a24;
+  --reset-btn-background: #ef4444;
+  --add-btn-background: #10b981;
+  --analyse-btn-background: #fbbf24;
+}
+
+/* Header styles */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Now, we replace the hardcoded colors in your existing styles
+  with our new CSS variables.
+*/
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  margin: 0;
+  padding: 20px;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+.layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.card {
+  background: var(--card-background);
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border-color);
+}
+
+.left-panel {
+  width: 520px;
+}
+
+.right-panel {
+  flex: 1;
+  min-height: 320px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Adjusted for toggle button */
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.reset-btn {
+  background: var(--reset-btn-background);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tab {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--tab-background);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+}
+
+.tab.active {
+  background: var(--tab-active-background);
+  color: var(--tab-active-text);
+  border-color: var(--tab-active-background);
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.input-row input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-background);
+  color: var(--text-color);
+}
+
+.input-row .add-btn {
+  background: var(--add-btn-background);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.items {
+  margin-top: 12px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--item-background);
+  margin-top: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.item .meta {
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.analyse-row {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.analyse-btn {
+  background: var(--analyse-btn-background);
+  color: #333;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.analyse-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.results-panel h3, .results-panel h4 {
+  margin: 0 0 8px 0;
+}
+
+.results-empty {
+  color: var(--muted-text-color);
+  padding: 24px;
+  text-align: center;
+}
+
+.result-card {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--result-card-background);
+  border: 1px solid var(--result-card-border);
+  margin-top: 12px;
+}
+
+.muted {
+  color: var(--muted-text-color);
+  font-size: 0.9rem;
+}
+
+/* Dark Mode Toggle Button Style */
+.theme-toggle-btn {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--item-background);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+}

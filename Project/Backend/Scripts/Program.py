@@ -1,5 +1,6 @@
 import csv
 import os
+import pickle
 import random
 import re
 import time
@@ -50,6 +51,10 @@ def main():
 
     #Test each model and return the evaluation of the model
     for model, name in zip(models, model_names):
+        filename = f'{path}Data/Output/Models/{name}.pkl'
+        with open(filename, 'wb') as file:
+            pickle.dump(model, file)
+
         y_true, y_prediction = use(model, name, test_data)
         if y_true is not None and y_prediction is not None:
             results.append((name, y_true, y_prediction))
