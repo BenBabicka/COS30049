@@ -8,6 +8,18 @@ from Model import Model
 path = os.getcwd().replace("Scripts", "") + "Data/Output/Models/"
 
 app = FastAPI()
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 classification_model = Model(path + "Logistic Regression")
 regression_model = Model(path + "Linear Regression")
