@@ -33,11 +33,11 @@ def use(request:Dict[str, Any]):
     regression_model_responses = regression_model.use_model(data)
     if classification_model_responses is None or regression_model_responses is None:
         return {"error": "Error in model"}
-    result = []
+    result = {}
     for i in range(len(classification_model_responses)):
         classification_model_response = "real" if classification_model_responses[i] == 1 else "fake"
-        regression_model_response = regression_model_responses[i]
-        result.append((classification_model_response, regression_model_response))
+        regression_model_response = f"{((1 / (1 + math.exp(-float(regression_model_responses[i]))))*100):.2f}%"
+        result[i] = {"text":data[i], "classification-response": classification_model_response, "regression-response": regression_model_response}
     return result
 
 @app.get("/get_stats")
@@ -57,9 +57,3 @@ r = {
             "RT @WHO: #COVID19 transmission occurs primarily through direct indirect or close contact with infected people through their saliva and res…"
     ]
 }
-
-print(use(r))
-responses = get_model_stats()
-for response in responses:
-    for r in responses[response]:
-        print(r, responses[response][r])
