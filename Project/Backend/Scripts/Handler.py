@@ -4,6 +4,8 @@ import os
 from fastapi import FastAPI
 from typing import Dict, Any
 
+from starlette.middleware.cors import CORSMiddleware
+
 from Model import Model
 path = os.getcwd().replace("Scripts", "") + "Data/Output/Models/"
 
