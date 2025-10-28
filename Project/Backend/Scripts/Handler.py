@@ -1,14 +1,15 @@
+import math
 import os
 
 from fastapi import FastAPI
 from typing import Dict, Any
 
-from Backend.Scripts.Model import Model
+from Model import Model
 path = os.getcwd().replace("Scripts", "") + "Data/Output/Models/"
 
 app = FastAPI()
 
-classification_model = Model(path + "Random Forest")
+classification_model = Model(path + "Logistic Regression")
 regression_model = Model(path + "Linear Regression")
 
 @app.post("/use")
@@ -21,7 +22,7 @@ def use(request:Dict[str, Any]):
     result = []
     for i in range(len(classification_model_responses)):
         classification_model_response = "real" if classification_model_responses[i] == 1 else "fake"
-        regression_model_response = float(regression_model_responses[i])
+        regression_model_response = f"{((1 / (1 + math.exp(-float(regression_model_responses[i]))))*100):.2f}%"
         result.append((classification_model_response, regression_model_response))
     return result
 
@@ -44,4 +45,7 @@ r = {
 }
 
 print(use(r))
-print(get_model_stats())
+responses = get_model_stats()
+for response in responses:
+    for r in responses[response]:
+        print(r, responses[response][r])
