@@ -32,8 +32,8 @@ function ResultsPanel({ results }) {
 
         {/* Map through each item in the results and render a ResultCard for it */}
         {/* The ResultCard component handles the display logic for each individual item type and classification */}
-        {results.items.map((item) => (
-          <ResultCard key={item.id} item={item} /> // Use item.id as the key
+        {results.map((item) => (
+          <ResultCard key={item["id"]} item={item} /> // Use item.id as the key
         ))}
       </div>
     </aside>

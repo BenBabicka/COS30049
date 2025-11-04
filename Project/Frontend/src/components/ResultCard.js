@@ -13,21 +13,13 @@ function escapeHtml(str) {
 // ResultCard component: Displays a single analysis result item.
 function ResultCard({ item }) {
   // Calculate confidence percentage and format to one decimal place
-  const confidencePercentage = ((item.confidence || 0) * 100).toFixed(1);
-
-  // Function to convert backend classification ('real'/'fake'/'error') to user-friendly display text
-  const displayClassification = (backendClass) => {
-    if (backendClass === 'fake') return 'Misinformation';
-    if (backendClass === 'real') return 'Legitimate';
-    if (backendClass === 'error') return 'Error'; // Handle error state
-    return 'Unknown'; // Fallback for any unexpected values
-  };
+  const confidencePercentage = item['confidence'];
   // Get the display text for the current item's classification
-  const itemDisplayClassification = displayClassification(item.classification);
+  const itemDisplayClassification = item['classification'];
 
   // Determine background and text colors based on classification for visual indication
   let bgColor, textColor;
-  switch (item.classification) {
+  switch (item['classification']) {
     case 'fake':
       bgColor = '#fee2e2'; // Light red background
       textColor = '#991b1b'; // Dark red text
@@ -51,7 +43,7 @@ function ResultCard({ item }) {
       {/* Card Header: Displays item type and classification badge */}
       <div>
         {/* Display the item type (e.g., TEXT, LINK), with a fallback */}
-        <strong>{escapeHtml(item.type?.toUpperCase() || 'UNKNOWN')}</strong>
+        <strong>{escapeHtml(item['type'])}</strong>
         {/* Badge showing the classification (Misinformation/Legitimate/Error) with appropriate colors */}
         <span
             style={{
@@ -70,11 +62,11 @@ function ResultCard({ item }) {
 
       {/* Display the original input value (escaped for safety) */}
       {/* 'wordBreak: break-all' prevents long URLs/text from overflowing */}
-      <div className="muted" style={{ wordBreak: 'break-all', marginTop: '4px' }} dangerouslySetInnerHTML={{ __html: escapeHtml(item.value) }} />
+      <div className="muted" style={{ wordBreak: 'break-all', marginTop: '4px' }} dangerouslySetInnerHTML={{ __html: escapeHtml(item['tweet']) }} />
 
       {/* Display the confidence score percentage */}
       <div style={{ marginTop: '8px' }}>
-        Confidence: <strong>{confidencePercentage}%</strong>
+        Confidence: <strong>{confidencePercentage}</strong>
       </div>
     </div>
   );

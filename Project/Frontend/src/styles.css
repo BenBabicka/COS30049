@@ -223,3 +223,13 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
+
+.left-side{
+position: relative;
+display: flex;
+    flex-direction: column;
+}
+
+.model-stats{
+    margin-top: 20px;
+}

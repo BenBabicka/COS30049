@@ -47,9 +47,8 @@ class Model:
 
     def use_model(self, input_data):
         data = []
-        for text in input_data:
-            text = clean_data(text)
-            data.append(text)
+        for inputData in input_data:
+            data.append(clean_data(inputData['value']))
         model, vectorizer, scaler, label_encoder = self.model
         data_frame = pd.DataFrame(data, columns=['text'])
 
@@ -59,8 +58,7 @@ class Model:
 
         # Predict with the model
         y_prediction = model.predict(x_test_scaled)
-        # Evaluate
-        print(f"{self.name} Evaluation:")
+
         return y_prediction
 
     def evaluate_model(self):
@@ -78,15 +76,13 @@ class Model:
         predicted_labels = model.predict(x_test_scaled)
         # Evaluate
         data = {
-                "MSE": mean_squared_error(actual_labels, predicted_labels),
-                "R2 score": r2_score(actual_labels, predicted_labels)
+                "MSE": float(f"{mean_squared_error(actual_labels, predicted_labels):.2f}"),
+                "R2 score": float(f"{r2_score(actual_labels, predicted_labels):.2f}")
         }
 
         if self.name != "Linear Regression" and self.name != "Ridge" and self.name != "Lasso" and self.name != "Elastic Net":
-            data["Accuracy"] = f"{accuracy_score(actual_labels, predicted_labels):.2f}"
-            data["Precision"] = f"{precision_score(actual_labels, predicted_labels):.2f}"
-            data["Recall"] = f"{recall_score(actual_labels, predicted_labels):.2f}"
-            data["F1-Score"] = f"{f1_score(actual_labels, predicted_labels):.2f}"
-            data["Confusion Matrix"] = confusion_matrix(actual_labels, predicted_labels)
-            data["Classification Report"] = classification_report(actual_labels, predicted_labels, zero_division=0)
+            data["Accuracy"] = float(f"{accuracy_score(actual_labels, predicted_labels):.2f}")
+            data["Precision"] = float(f"{precision_score(actual_labels, predicted_labels):.2f}")
+            data["Recall"] = float(f"{recall_score(actual_labels, predicted_labels):.2f}")
+            data["F1-Score"] = float(f"{f1_score(actual_labels, predicted_labels):.2f}")
         return data

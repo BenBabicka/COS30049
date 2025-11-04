@@ -121,7 +121,7 @@ function InputPanel({ tab, setTab, items, setItems, onAnalyse, loading }) {
     <>
       {/* Tabs for selecting input type */}
       <div className="tabs">
-         <div className={`tab ${tab === 'link' ? 'active' : ''}`} onClick={() => setTab('link')}>PASTE LINK</div>
+          {/*<div className={`tab ${tab === 'link' ? 'active' : ''}`} onClick={() => setTab('link')}>PASTE LINK</div>*/}
          <div className={`tab ${tab === 'text' ? 'active' : ''}`} onClick={() => setTab('text')}>TEXT</div>
          <div className={`tab ${tab === 'upload' ? 'active' : ''}`} onClick={() => setTab('upload')}>UPLOAD (.txt, .csv)</div>
       </div>

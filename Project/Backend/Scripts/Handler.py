@@ -40,7 +40,7 @@ def use(request:Dict[str, Any]):
     for i in range(len(classification_model_responses)):
         classification_model_response = "real" if classification_model_responses[i] == 1 else "fake"
         regression_model_response = f"{((1 / (1 + math.exp(-float(regression_model_responses[i]))))*100):.2f}%"
-        result[i] = {"text":data[i], "classification-response": classification_model_response, "regression-response": regression_model_response}
+        result[i] = {"text":data[i]['value'], "type":data[i]['type'], "label":int(classification_model_responses[i]), "classification-response": classification_model_response, "regression-response": regression_model_response}
     return result
 
 @app.get("/get_stats")
